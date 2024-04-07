@@ -14,6 +14,7 @@ func main() {
 	println("DCS API v0.1")
 
 	data.InitVariables()
+	CreateDbInstance()
 
 	router := mux.NewRouter()
 	router.HandleFunc("/keywords", GetModKeys).Methods("GET")

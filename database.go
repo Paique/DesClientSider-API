@@ -7,20 +7,49 @@ import (
 	"strconv"
 )
 
-func accessDb() *sql.DB {
-	dsn := data.DbUser + ":" + data.DbPass + "@tcp(127.0.0.1:" + data.DbPort + ")/" + data.DbName
+func CreateDbInstance() {
+	dsn := data.DbUser + ":" + data.DbPass + "@tcp(127.0.0.1:" + data.DbPort + ")/dcs"
 
 	db, err := sql.Open("mysql", dsn)
+
+	//Todo: I have no idea if this is right
+	db.SetConnMaxLifetime(0)
+	db.SetMaxOpenConns(0)
 
 	if err != nil {
 		panic(err)
 	}
 
-	return db
+	data.DbConn = db
+
+	initTables()
+	println("Database connection initialized")
+}
+
+func initTables() {
+	db := data.DbConn
+	_, err := db.Query("CREATE TABLE IF NOT EXISTS Keywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
+
+	if err != nil {
+		panic("Cannot create table Keywords")
+		return
+	}
+	_, err = db.Query("CREATE TABLE IF NOT EXISTS ContraKeywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
+
+	if err != nil {
+		panic("Cannot create table ContraKeywords")
+		return
+	}
+
 }
 
 func GetKeysList() []data.Keywords {
-	db := accessDb()
+	var keywords []data.Keywords
+
+	db := data.DbConn
+	if db == nil {
+		panic("Database connection failed")
+	}
 	rows, err := db.Query("select * from Keywords")
 	if err != nil {
 		panic(err)
@@ -29,7 +58,6 @@ func GetKeysList() []data.Keywords {
 	defer rows.Close()
 
 	var id int
-	var keywords []data.Keywords
 	for rows.Next() {
 		var dbModkey string
 		err = rows.Scan(&dbModkey)
@@ -39,12 +67,11 @@ func GetKeysList() []data.Keywords {
 		keywords = append(keywords, data.Keywords{ID: strconv.Itoa(id), Keyword: dbModkey})
 		id++
 	}
-	defer db.Close()
 	return keywords
 }
 
 func GetContraKeyList() []data.ContraKeys {
-	db := accessDb()
+	db := data.DbConn
 	rows, err := db.Query("select * from ContraKeywords")
 
 	if err != nil {
@@ -64,6 +91,5 @@ func GetContraKeyList() []data.ContraKeys {
 		contraKey = append(contraKey, data.ContraKeys{ID: strconv.Itoa(id), Keyword: dbModContrakey})
 		id++
 	}
-	defer db.Close()
 	return contraKey
 }
