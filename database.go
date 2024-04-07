@@ -25,22 +25,54 @@ func CreateDbInstance() {
 
 	data.DbConn = db
 
+	if data.ConnTries > 10 {
+		panic("Cannot connect to database after 10 retries")
+	}
+
+	err = db.Ping()
+
+	if err != nil {
+		println("Cannot connect to database!")
+		println("Trying again in 5 secs...")
+		time.Sleep(5 * time.Second)
+		println("Try: " + strconv.Itoa(data.ConnTries) + "/10")
+		CreateDbInstance()
+	}
+
+	println("Database connection established!")
+
+	println("Initializing database...")
 	initTables()
 }
 
 func initTables() {
 	db := data.DbConn
-	_, err := db.Query("CREATE TABLE IF NOT EXISTS Keywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
 
-	if err != nil {
-		panic("Cannot create table Keywords")
-		return
+	_, tableCheck := db.Query("select * from Keywords")
+
+	var err error
+	if tableCheck != nil {
+		println("Creating table Keywords")
+		_, err = db.Query("CREATE TABLE Keywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
+		keywords := util.GetdefaultList()
+
+		println("Adding default keywords to the table")
+		for _, element := range keywords {
+			println("Added " + element + " to the table keywords")
+			_, err = db.Query("INSERT INTO Keywords(keyword) VALUES (?);", element)
+		}
 	}
-	_, err = db.Query("CREATE TABLE IF NOT EXISTS ContraKeywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
+
+	_, tableCheck = db.Query("select * from ContraKeywords")
+
+	if tableCheck != nil {
+		_, err = db.Query("CREATE TABLE ContraKeywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
+
+	}
 
 	if err != nil {
-		panic("Cannot create table ContraKeywords")
-		return
+		println("Cannot create tables")
+		panic(err)
 	}
 }
 
