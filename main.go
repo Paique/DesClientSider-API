@@ -8,9 +8,8 @@ import (
 	"net/http"
 )
 
-var ()
-
 func main() {
+
 	println("DCS API v0.1")
 
 	data.InitVariables()
@@ -57,4 +56,5 @@ func GetContraKeys(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		println(err.Error())
 	}
+
 }
