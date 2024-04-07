@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"log"
 	"os"
 )
 
@@ -16,12 +17,11 @@ var (
 	DbConn *sql.DB
 )
 
-func InitVariables() {
-
+func init() {
 	appPort, isAppPortSet := os.LookupEnv("DCS_LISTEN_PORT")
 
 	if !isAppPortSet {
-		println("DCS_LISTEN_PORT not set, defaulting to 8080")
+		log.Println("DCS_LISTEN_PORT not set, defaulting to 8080")
 		appPort = "8080"
 	}
 
@@ -33,20 +33,20 @@ func InitVariables() {
 	dbPort, isDbPortSet := os.LookupEnv("DB_PORT")
 
 	if !isDbPassSet {
-		panic("DB_PASSWORD environment variable not set")
+		log.Panicln("DB_PASSWORD environment variable not set")
 	}
 
 	if !isDbUserSet {
-		panic("DB_USERNAME environment variable not set")
+		log.Panicln("DB_USERNAME environment variable not set")
 	}
 
 	if !isDbNameSet {
-		println("DB_NAME environment variable not set, defaulting to dcs")
+		log.Println("DB_NAME environment variable not set, defaulting to dcs")
 		dbName = "dcs"
 	}
 
 	if !isDbPortSet {
-		println("DB_PORT environment variable not set, defaulting to 3306")
+		log.Println("DB_PORT environment variable not set, defaulting to 3306")
 		dbPort = "3306"
 	}
 
@@ -54,5 +54,4 @@ func InitVariables() {
 	DbPass = dbPass
 	DbName = dbName
 	DbPort = dbPort
-
 }
