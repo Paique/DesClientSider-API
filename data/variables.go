@@ -12,8 +12,10 @@ var (
 	DbPass string
 	DbName string
 	DbPort string
+	DbHost string
 
-	DbConn *sql.DB
+	DbConn    *sql.DB
+	ConnTries int = 0
 )
 
 func InitVariables() {
@@ -31,6 +33,7 @@ func InitVariables() {
 	dbPass, isDbPassSet := os.LookupEnv("DB_PASSWORD")
 	dbName, isDbNameSet := os.LookupEnv("DB_NAME")
 	dbPort, isDbPortSet := os.LookupEnv("DB_PORT")
+	dbHost, isDbHostSet := os.LookupEnv("DB_HOST")
 
 	if !isDbPassSet {
 		panic("DB_PASSWORD environment variable not set")
@@ -50,9 +53,15 @@ func InitVariables() {
 		dbPort = "3306"
 	}
 
+	if !isDbHostSet {
+		println("DB_HOST environment variable not set, defaulting to 127.0.0.1")
+		dbHost = "127.0.0.1"
+	}
+
 	DbUser = dbUser
 	DbPass = dbPass
 	DbName = dbName
 	DbPort = dbPort
+	DbHost = dbHost
 
 }
