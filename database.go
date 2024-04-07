@@ -29,7 +29,7 @@ func GetDbInstance() *sql.DB {
 
 // CreateDbInstance creates a new database connection instance
 func connectDB() {
-	dsn := fmt.Sprintf("%s:%s@tcp(127.0.0.1:%s)/%s", data.DbUser, data.DbPass, data.DbPort, "dcs")
+	dsn := fmt.Sprintf("%s:%s@tcp(127.0.0.1:%s)/%s", data.DbUser, data.DbPass, data.DbPort, data.DbName)
 
 	conn, err := sql.Open("mysql", dsn)
 	conn.SetMaxOpenConns(10)

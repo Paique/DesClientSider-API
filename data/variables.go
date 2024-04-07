@@ -1,7 +1,6 @@
 package data
 
 import (
-	"database/sql"
 	"log"
 	"os"
 )
@@ -13,8 +12,6 @@ var (
 	DbPass string
 	DbName string
 	DbPort string
-
-	DbConn *sql.DB
 )
 
 func init() {
