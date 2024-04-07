@@ -3,12 +3,15 @@ package main
 import (
 	"database/sql"
 	"dcs-rest-api/data"
+	"dcs-rest-api/util"
 	_ "github.com/go-sql-driver/mysql"
 	"strconv"
+	"time"
 )
 
 func CreateDbInstance() {
-	dsn := data.DbUser + ":" + data.DbPass + "@tcp(127.0.0.1:" + data.DbPort + ")/dcs"
+	data.ConnTries++
+	dsn := data.DbUser + ":" + data.DbPass + "@tcp(" + data.DbHost + ":" + data.DbPort + ")/" + data.DbName
 
 	db, err := sql.Open("mysql", dsn)
 
@@ -23,7 +26,6 @@ func CreateDbInstance() {
 	data.DbConn = db
 
 	initTables()
-	println("Database connection initialized")
 }
 
 func initTables() {
@@ -40,7 +42,6 @@ func initTables() {
 		panic("Cannot create table ContraKeywords")
 		return
 	}
-
 }
 
 func GetKeysList() []data.Keywords {
