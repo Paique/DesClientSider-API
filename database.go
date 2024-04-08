@@ -3,25 +3,20 @@ package main
 import (
 	"database/sql"
 	"dcs-rest-api/data"
+	"dcs-rest-api/util"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"strconv"
-	"sync"
 )
 
 var conn *sql.DB
-var lock sync.Mutex
 
 // GetDbInstance returns the database connection instance
 func GetDbInstance() *sql.DB {
-	if conn == nil {
-		lock.Lock()
-		defer lock.Unlock()
 
-		if conn == nil {
-			connectDB()
-		}
+	if conn == nil {
+		connectDB()
 	}
 
 	return conn
@@ -29,16 +24,16 @@ func GetDbInstance() *sql.DB {
 
 // CreateDbInstance creates a new database connection instance
 func connectDB() {
-	dsn := fmt.Sprintf("%s:%s@tcp(127.0.0.1:%s)/%s", data.DbUser, data.DbPass, data.DbPort, data.DbName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", data.DbUser, data.DbPass, data.DbHost, data.DbPort, data.DbName)
 
-	conn, err := sql.Open("mysql", dsn)
+	var err error
+	conn, err = sql.Open("mysql", dsn)
 	conn.SetMaxOpenConns(10)
+
 	if err != nil {
 		log.Panicf("cannot connect to database: %s", err)
 		return
 	}
-
-	conn = conn
 
 	initTables()
 
@@ -47,16 +42,32 @@ func connectDB() {
 
 func initTables() {
 	db := GetDbInstance()
-	_, err := db.Query("CREATE TABLE IF NOT EXISTS Keywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
-	if err != nil {
-		log.Panicln("cannot create table Keywords")
-		return
+
+	_, tableCheck := db.Query("select * from Keywords")
+
+	var err error
+	if tableCheck != nil {
+		log.Println("Creating table Keywords")
+		_, err = db.Query("CREATE TABLE Keywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
+		keywords := util.GetdefaultList()
+
+		println("Adding default keywords to the table")
+		for _, element := range keywords {
+			log.Println("Added " + element + " to the table keywords")
+			_, err = db.Query("INSERT INTO Keywords(keyword) VALUES (?);", element)
+		}
 	}
 
-	_, err = db.Query("CREATE TABLE IF NOT EXISTS ContraKeywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
+	_, tableCheck = db.Query("select * from ContraKeywords")
+
+	if tableCheck != nil {
+		_, err = db.Query("CREATE TABLE ContraKeywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
+
+	}
+
 	if err != nil {
-		log.Panicln("cannot create table ContraKeywords")
-		return
+		log.Println("Cannot create tables")
+		log.Panicln(err)
 	}
 }
 
