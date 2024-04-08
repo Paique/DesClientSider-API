@@ -9,52 +9,60 @@ import (
 )
 
 func main() {
-
-	println("DCS API v0.1")
-
-	data.InitVariables()
-	CreateDbInstance()
+	log.Println("DCS API v0.1")
 
 	router := mux.NewRouter()
+
+	_ = GetDbInstance()
+
+	router.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Add("Content-Type", "application/json")
+			next.ServeHTTP(w, r)
+		})
+	})
+
 	router.HandleFunc("/keywords", GetModKeys).Methods("GET")
 	router.HandleFunc("/contra", GetContraKeys).Methods("GET")
 
-	println("Listening on port 8080")
+	log.Println("listening on port 8080")
 
-	log.Fatal(http.ListenAndServe(":"+data.AppPort, router))
+	if err := http.ListenAndServe(":"+data.AppPort, router); err != nil {
+		log.Fatalf("error while starting the server: %s", err)
+		return
+	}
 }
 
+// GetModKeys returns the list of mod keys
 func GetModKeys(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	dbResp := GetKeysList()
 
 	if dbResp == nil {
-		println("Response from database is null")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	err := json.NewEncoder(w).Encode(dbResp)
 	if err != nil {
-		println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Panicf("error while encoding response: %s", err)
+		return
 	}
 }
-func GetContraKeys(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
+// GetContraKeys returns the list of contra keys
+func GetContraKeys(w http.ResponseWriter, r *http.Request) {
 	dbResp := GetContraKeyList()
 
 	if dbResp == nil {
-		println("Response from database is null")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	err := json.NewEncoder(w).Encode(dbResp)
-
 	if err != nil {
-		println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Panicf("error while encoding response: %s", err)
+		return
 	}
-
 }
