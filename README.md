@@ -1,26 +1,25 @@
-
 # DCS API
 
-DCS API é uma API bem simples em Go projetada para fornecer funcionalidades relacionadas ao [DesClientSider (DCS)](https://github.com/Paique/DesClientSider), uma ferramenta para gerenciamento de mods client-side em servidores de Minecraft.
+DCS API is a simple Go API designed to provide functionalities related to [DesClientSider (DCS)](https://github.com/Paique/DesClientSider), a tool for managing client-side mods on Minecraft servers.
 
-## Funcionalidades
+## Features
 
-- **Rota /keywords**: Retorna as palavras-chave atualmente configuradas no DCS para identificar mods incompatíveis.
-- **Rota /contra**: Retorna as palavras-chave configuradas para identificar mods contra os quais o DCS não deve agir.
+- **/keywords Endpoint**: Returns the keywords currently configured in DCS to identify incompatible mods.
+- **/contra Endpoint**: Returns keywords configured to identify mods against which DCS should not act.
 
 ## Endpoints
 
 ### GET /keywords
 
-Retorna as palavras-chave atualmente configuradas no DCS.
+Returns the keywords currently configured in DCS.
 
-#### Exemplo de Requisição:
+#### Request Example:
 
 ```
 GET /keywords
 ```
 
-#### Exemplo de Resposta:
+#### Response Example:
 
 ```json
 [
@@ -41,15 +40,15 @@ GET /keywords
 
 ### GET /contra
 
-Retorna as palavras-chave configuradas para identificar mods contra os quais o DCS não deve agir.
+Returns keywords configured to identify mods against which DCS should not act.
 
-#### Exemplo de Requisição:
+#### Request Example:
 
 ```
 GET /contra
 ```
 
-#### Exemplo de Resposta:
+#### Response Example:
 
 ```json
 [
@@ -60,54 +59,56 @@ GET /contra
 ]
 ```
 
-## Requisitos
+## Requirements
 
 - Go 1.22
 - MySql
 
-## Instalação e Uso
+## Installation and Usage
 
-1. Clone o repositório da DCS API.
-2. Certifique-se de ter Go instalado em seu sistema.
-3. Faça build do binário para o seu OS utilizando:
+1. Clone the DCS API repository.
+2. Make sure you have Go installed on your system.
+3. Build the binary for your OS using:
 
 ```bash
 go build
 ```
-4. Realize a configuração do Mysql, crie o seu usuário, e defina uma senha, também crie a database dcs, e as tabelas Keywords, e ContraKeywords, as duas contendo:
+
+4. Configure MySql, create your user, set a password, create the `dcs` database, and the `Keywords` and `ContraKeywords` tables, both containing:
 ```mysql
+CREATE DATABASE dcs;
 USE dcs;
 CREATE TABLE ContraKeywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);
 CREATE TABLE Keywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);
 ```
-Não se esqueça de definir as keys desejadas na database!
+Don't forget to define the desired keys in the database!
 
-5. Defina as variáveis de ambiente:
+5. Set the environment variables:
 ```
- DB_USERNAME, DB_PASSWORD
+DB_USERNAME, DB_PASSWORD
 ```
 
-Opcionalmente você pode definir as variáveis:
+Optionally, you can set the variables:
 ```
 DCS_LISTEN_PORT, DB_NAME, DB_PORT
 ```
 
-As variáveis opcionais possuem valores padrões pré-definidos que serão substituídos se as variáveis forem setadas:
+The optional variables have predefined default values that will be replaced if the variables are set:
 DCS_LISTEN_PORT = 8080
 DB_NAME=dcs
 DB_PORT=3306
 
-Isso iniciará o servidor da API na porta desejada (ou na padrão 8080 se não definir).
-É recomendado utilizar Docker.
+This will start the API server on the desired port (or on the default 8080 if not defined).
+It is recommended to use Docker.
 
-## Contribuição
+## Contribution
 
-Contribuições são bem-vindas! Se você encontrar bugs ou tiver sugestões de melhorias, sinta-se à vontade para abrir uma issue ou enviar um pull request para o repositório oficial da DCS API.
+Contributions are welcome! If you find bugs or have suggestions for improvements, feel free to open an issue or send a pull request to the official DCS API repository.
 
-## Licença
+## License
 
-Este projeto é licenciado sob a [MIT License](https://opensource.org/licenses/MIT).
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
 
 ---
 
-Este projeto faz parte do DCS [repositório oficial do DCS client](https://github.com/Paique/DesClientSider).
+This project is part of the DCS [official DCS client repository](https://github.com/Paique/DesClientSider).
