@@ -25,7 +25,7 @@ func main() {
 	router.HandleFunc("/keywords", GetModKeys).Methods("GET")
 	router.HandleFunc("/contra", GetContraKeys).Methods("GET")
 
-	log.Println("listening on port 8080")
+	log.Println("listening on port " + data.AppPort)
 
 	if err := http.ListenAndServe(":"+data.AppPort, router); err != nil {
 		log.Fatalf("error while starting the server: %s", err)
