@@ -46,7 +46,6 @@ func init() {
 
 	if !isDbPortSet {
 		log.Println("DB_PORT environment variable not set, defaulting to 3306")
-
 		dbPort = "3306"
 	}
 
