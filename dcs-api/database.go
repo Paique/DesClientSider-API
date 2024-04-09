@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"strconv"
+	"time"
 )
 
 var conn *sql.DB
@@ -22,16 +23,27 @@ func GetDbInstance() *sql.DB {
 	return conn
 }
 
-// CreateDbInstance creates a new database connection instance
+var try = 0
+
+// connectDB creates a new database connection instance
 func connectDB() {
+
+	if try >= 10 {
+		log.Panic("Can't connect to database after 10 attempts")
+	}
+
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", data.DbUser, data.DbPass, data.DbHost, data.DbPort, data.DbName)
 
 	var err error
 	conn, err = sql.Open("mysql", dsn)
 	conn.SetMaxOpenConns(10)
 
-	if err != nil {
-		log.Panicf("cannot connect to database: %s", err)
+	if conn.Ping() != nil || err != nil {
+		try++
+		log.Printf("Cannot ping database, trying to connect again in 5 secs.")
+		time.Sleep(5 * time.Second)
+		fmt.Printf("Trying to connect to database %d/10 \n", try)
+		connectDB()
 		return
 	}
 
