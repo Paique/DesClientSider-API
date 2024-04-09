@@ -61,46 +61,31 @@ GET /contra
 
 ## Requirements
 
-- Go 1.22
-- MySql
+- Docker
 
 ## Installation and Usage
 
 1. Clone the DCS API repository.
-2. Make sure you have Go installed on your system.
-3. Build the binary for your OS using:
+2. Make sure you have Docker, and git installed on your system.
+3. Build the binary and execute using:
 
 ```bash
-go build
+git clone https://github.com/Paique/DesClientSider-API.git
+cd DesClientSider-API
+docker compose up
 ```
 
-4. Configure MySql, create your user, set a password, create the `dcs` database, and the `Keywords` and `ContraKeywords` tables, both containing:
-```mysql
-CREATE DATABASE dcs;
-USE dcs;
-CREATE TABLE ContraKeywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);
-CREATE TABLE Keywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);
-```
-Don't forget to define the desired keys in the database!
 
-5. Set the environment variables:
+The optional variables have predefined default values that will be replaced if the variables are set in compose.yaml:
+```yaml
+#These are the default values
+environment:
+  DCS_LISTEN_PORT: 8080
+  DB_NAME: dcs
+  DB_PORT: 3306
 ```
-DB_USERNAME, DB_PASSWORD
-```
-
-Optionally, you can set the variables:
-```
-DCS_LISTEN_PORT, DB_NAME, DB_PORT
-```
-
-The optional variables have predefined default values that will be replaced if the variables are set:
-DCS_LISTEN_PORT = 8080
-DB_NAME=dcs
-DB_PORT=3306
 
 This will start the API server on the desired port (or on the default 8080 if not defined).
-It is recommended to use Docker.
-
 ## Contribution
 
 Contributions are welcome! If you find bugs or have suggestions for improvements, feel free to open an issue or send a pull request to the official DCS API repository.
