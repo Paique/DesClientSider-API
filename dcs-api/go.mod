@@ -1,4 +1,4 @@
-module dcs-rest-api
+module dcs-api
 
 go 1.22
 

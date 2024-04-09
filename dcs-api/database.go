@@ -2,8 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"dcs-rest-api/data"
-	"dcs-rest-api/util"
+	"dcs-api/data"
+	"dcs-api/util"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
@@ -53,33 +53,67 @@ func connectDB() {
 }
 
 func initTables() {
+	var err error
+
 	db := GetDbInstance()
 
-	_, tableCheck := db.Query("select * from Keywords")
+	rows, err := db.Query("select * from Keywords")
 
-	var err error
-	if tableCheck != nil {
+	if err != nil {
 		log.Println("Creating table Keywords")
-		_, err = db.Query("CREATE TABLE Keywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
-		keywords := util.GetdefaultList()
+		rows, err = db.Query("CREATE TABLE Keywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
+
+		if err != nil {
+			log.Panic("Cannot create table Keywords: ", err)
+		}
+
+		keywords := util.GetdefaultKeys(false)
+
+		rows.Close()
 
 		println("Adding default keywords to the table")
 		for _, element := range keywords {
-			log.Println("Added " + element + " to the table keywords")
-			_, err = db.Query("INSERT INTO Keywords(keyword) VALUES (?);", element)
+			rows, err = db.Query("INSERT INTO Keywords(keyword) VALUES (?);", element)
+
+			if err != nil {
+				log.Printf("Failed inserting keyword %s into table", element)
+			} else {
+				log.Println("Added " + element + " to the table keywords")
+			}
+
+			rows.Close()
 		}
+		println("Table keywords: Defaults generated")
+	} else {
+		println("Table keywords already exists")
+		rows.Close()
 	}
 
-	_, tableCheck = db.Query("select * from ContraKeywords")
-
-	if tableCheck != nil {
-		_, err = db.Query("CREATE TABLE ContraKeywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
-
-	}
+	rows, err = db.Query("select * from ContraKeywords")
 
 	if err != nil {
-		log.Println("Cannot create tables")
-		log.Panicln(err)
+		rows, err = db.Query("CREATE TABLE ContraKeywords(keyword VARCHAR(30) PRIMARY KEY UNIQUE);")
+		rows.Close()
+
+		if err != nil {
+			log.Panic("Cannot create table Keywords: ", err)
+		}
+
+		keywords := util.GetdefaultKeys(true)
+
+		for _, element := range keywords {
+			rows, err = db.Query("INSERT INTO ContraKeywords(keyword) VALUES (?);", element)
+			rows.Close()
+			if err != nil {
+				log.Printf("Failed inserting keyword %s into table", element)
+			} else {
+				log.Println("Added " + element + " to the table contraKeywords")
+			}
+		}
+		println("Table contaKeywords: Defaults generated")
+	} else {
+		println("Table contaKeywords already exists")
+		rows.Close()
 	}
 }
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"dcs-rest-api/data"
+	"dcs-api/data"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"log"

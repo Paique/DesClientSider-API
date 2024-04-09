@@ -1,0 +1,43 @@
+version: '3'
+services:
+    dcs-api:
+        build: .
+        container_name: dcs_api
+        image: dcs-api
+        depends_on:
+            - mysql
+        restart: always
+        networks:
+          - no-internet
+          - internet
+        environment:
+            DB_USERNAME: root
+            #Change this
+            DB_PASSWORD: example
+            DB_HOST: mysql
+        ports:
+            - "8080:8080"
+       
+    mysql:
+        container_name: dcs_mysql
+        image: mysql:latest
+        restart: always
+        networks:
+          - no-internet
+        environment:
+            MYSQL_DATABASE: dcs
+            #Change this
+            MYSQL_ROOT_PASSWORD: example
+        volumes:
+            - mysql-dcs-data:/var/lib/mysql
+        ports:
+            - "3306:3306"
+
+
+volumes:
+    mysql-dcs-data:
+        
+networks:
+  internet: {}
+  no-internet:
+    internal: true
