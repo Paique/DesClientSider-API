@@ -4,7 +4,7 @@ LABEL author="Paique"
 
 RUN apt-get update -y
 
-RUN DEBIAN_FRONTEND=noninteractive TZ=America/Sao_Paulo apt-get install -y curl wget unzip zip
+RUN DEBIAN_FRONTEND=noninteractive TZ=America/Sao_Paulo apt-get install -y curl wget unzip zip tzdata
 
 RUN useradd -ms /bin/bash dcs-docker
 
