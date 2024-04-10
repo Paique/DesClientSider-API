@@ -194,3 +194,16 @@ func GetContraKeyList() []ContraKeys {
 
 	return contraKey
 }
+
+func StoreLog(url string, ip string) {
+	db := GetDbInstance()
+
+	golangDateTime := time.Now().Format("2006-01-02 15:04:05")
+
+	rows, err := db.Query("INSERT INTO Logs(time, ip, url) VALUES (?,?,?);", golangDateTime, ip, url)
+	if err != nil {
+		log.Panicf("Cannot query database: %s", err)
+	}
+
+	defer rows.Close()
+}
