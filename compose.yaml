@@ -1,4 +1,3 @@
-version: '3'
 services:
     dcs-api:
         build: .
@@ -24,6 +23,7 @@ services:
         restart: always
         networks:
           - no-internet
+          - internet
         environment:
             MYSQL_DATABASE: dcs
             #Change this
@@ -33,11 +33,27 @@ services:
         ports:
             - "3306:3306"
 
+    #Grafana setup login is admin for password, and user
+    grafana:
+      container_name: grafana
+      image: grafana/grafana-enterprise
+      restart: unless-stopped
+      networks:
+        - no-internet
+        - internet
+      volumes:
+        - grafana-data:/var/lib/grafana
+      ports:
+        - "3000:3000"
+
+
 
 volumes:
-    mysql-dcs-data:
+    mysql-dcs-data: {}
+    grafana-data: {}
         
 networks:
   internet: {}
-  no-internet:
+  no-internet: {
     internal: true
+  }
