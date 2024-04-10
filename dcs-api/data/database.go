@@ -1,8 +1,7 @@
-package main
+package data
 
 import (
 	"database/sql"
-	"dcs-api/data"
 	"dcs-api/util"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -32,7 +31,7 @@ func connectDB() {
 		log.Panic("Can't connect to database after 10 attempts")
 	}
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", data.DbUser, data.DbPass, data.DbHost, data.DbPort, data.DbName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", DbUser, DbPass, DbHost, DbPort, DbName)
 
 	var err error
 	conn, err = sql.Open("mysql", dsn)
@@ -71,21 +70,21 @@ func initTables() {
 
 		rows.Close()
 
-		println("Adding default keywords to the table")
+		log.Println("Adding default keywords to the table")
 		for _, element := range keywords {
 			rows, err = db.Query("INSERT INTO Keywords(keyword) VALUES (?);", element)
 
 			if err != nil {
 				log.Printf("Failed inserting keyword %s into table", element)
 			} else {
-				log.Println("Added " + element + " to the table keywords")
+				log.Println("Added " + element + " to the table Keywords")
 			}
 
 			rows.Close()
 		}
-		println("Table keywords: Defaults generated")
+		log.Println("Table Keywords: Defaults generated")
 	} else {
-		println("Table keywords already exists")
+		log.Println("Table Keywords already exists")
 		rows.Close()
 	}
 
@@ -110,36 +109,36 @@ func initTables() {
 				log.Println("Added " + element + " to the table contraKeywords")
 			}
 		}
-		println("Table contaKeywords: Defaults generated")
+		log.Println("Table ContaKeywords: Defaults generated")
 	} else {
-		println("Table contaKeywords already exists")
+		log.Println("Table ContaKeywords already exists")
 		rows.Close()
 	}
 }
 
-func GetKeysList() []data.Keywords {
+func GetKeysList() []Keywords {
 	db := GetDbInstance()
 
 	rows, err := db.Query("SELECT * FROM Keywords")
 	if err != nil {
-		log.Panicf("cannot query database: %s", err)
+		log.Panicf("Cannot query database: %s", err)
 		return nil
 	}
 	defer rows.Close()
 
 	var id int
-	var keywords []data.Keywords
+	var keywords []Keywords
 
 	for rows.Next() {
 		var dbModkey string
 
 		err = rows.Scan(&dbModkey)
 		if err != nil {
-			log.Panicf("cannot scan row: %s", err)
+			log.Panicf("Cannot scan row: %s", err)
 			return nil
 		}
 
-		keywords = append(keywords, data.Keywords{
+		keywords = append(keywords, Keywords{
 			ID:      strconv.Itoa(id),
 			Keyword: dbModkey,
 		})
@@ -150,28 +149,28 @@ func GetKeysList() []data.Keywords {
 	return keywords
 }
 
-func GetContraKeyList() []data.ContraKeys {
+func GetContraKeyList() []ContraKeys {
 	db := GetDbInstance()
 
 	rows, err := db.Query("SELECT * FROM ContraKeywords")
 	if err != nil {
-		log.Panicf("cannot query database: %s", err)
+		log.Panicf("Cannot query database: %s", err)
 		return nil
 	}
 	defer rows.Close()
 
 	var id int
-	var contraKey []data.ContraKeys
+	var contraKey []ContraKeys
 
 	for rows.Next() {
 		var dbModContrakey string
 
 		err = rows.Scan(&dbModContrakey)
 		if err != nil {
-			log.Panicf("cannot scan row: %s", err)
+			log.Panicf("Cannot scan row: %s", err)
 		}
 
-		contraKey = append(contraKey, data.ContraKeys{
+		contraKey = append(contraKey, ContraKeys{
 			ID:      strconv.Itoa(id),
 			Keyword: dbModContrakey,
 		})
