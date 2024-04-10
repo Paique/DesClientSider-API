@@ -114,6 +114,20 @@ func initTables() {
 		log.Println("Table ContaKeywords already exists")
 		rows.Close()
 	}
+
+	rows, err = db.Query("select * from Logs")
+	if err != nil {
+		rows, err = db.Query("CREATE TABLE Logs(time DATETIME, ip varchar(20), url VARCHAR(20));")
+		rows.Close()
+
+		if err != nil {
+			log.Panic("Cannot create table Logs: ", err)
+		}
+
+	} else {
+		log.Println("Table Logs already exists")
+	}
+
 }
 
 func GetKeysList() []Keywords {
