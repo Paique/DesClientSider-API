@@ -117,7 +117,7 @@ func initTables() {
 
 	rows, err = db.Query("select * from Logs")
 	if err != nil {
-		rows, err = db.Query("CREATE TABLE Logs(time DATETIME, ip varchar(20), url VARCHAR(20));")
+		rows, err = db.Query("CREATE TABLE Logs(time DATETIME, ip varchar(30), url VARCHAR(30));")
 		rows.Close()
 
 		if err != nil {
