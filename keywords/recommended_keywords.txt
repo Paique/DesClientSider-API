@@ -76,3 +76,4 @@ yungsmenutweaks
 watermedia
 replaymod
 realcamera
+legendarytooltips
