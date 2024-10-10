@@ -79,3 +79,5 @@ realcamera
 legendarytooltips
 3dSkinLayers
 TL-Skin-and-Cape-Mod
+bad_npcs-
+[1.20.1] EasyLAN-
